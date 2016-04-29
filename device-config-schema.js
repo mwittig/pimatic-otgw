@@ -41,5 +41,10 @@ module.exports = {
     title: "OTGWThermostat config options",
     type: "object",
     properties: {}
+  },
+  OTGWFlamePresenceSensor: {
+    title: "OTGWFlamePresenceSensor config options",
+    type: "object",
+    properties: {}
   }
 };

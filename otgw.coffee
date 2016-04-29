@@ -57,6 +57,11 @@ module.exports = (env) ->
         createCallback: (config) -> new OTGWThermostat(config)
       })
 
+      @framework.deviceManager.registerDeviceClass("OTGWFlamePresenceSensor", {
+        configDef: deviceConfigDef.OTGWFlamePresenceSensor,
+        createCallback: (config) -> new OTGWFlamePresenceSensor(config)
+      })
+
       # @framework.deviceManager.registerDeviceClass("MaxContactSensor", {
       #   configDef: deviceConfigDef.MaxContactSensor,
       #   createCallback: (config, lastState) -> new MaxContactSensor(config, lastState)
@@ -327,5 +332,28 @@ module.exports = (env) ->
       )
 
     getTemperature: -> Promise.resolve(@_temperature)
+
+  class OTGWFlamePresenceSensor extends env.devices.PresenceSensor
+
+    @_presence = false
+
+    constructor: (@config) ->
+      @id = @config.id
+      @name = @config.name
+
+      plugin.otgw.on("flame_status" , (data) =>
+        if data.length = 16
+          @_setPresence(@_bitToBool(data.slice(12,13)))
+      )
+      super()
+
+    #Getters
+    getPresence: () -> return Promise.resolve @_flame
+
+    #No need for setter, _setPresence()  is implemented by super class
+
+    #Functions
+    _bitToBool: (value) ->
+      return (value is "1")
 
   return plugin
